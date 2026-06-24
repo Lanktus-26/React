@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
 
-import HomeScreen from './screens/HomeScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import PerfilScreen from './screens/PerfilScreen';
 import CompetenciasScreen from './screens/CompetenciasScreen';
 

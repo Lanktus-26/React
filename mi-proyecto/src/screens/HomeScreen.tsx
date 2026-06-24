@@ -1,10 +1,10 @@
 import { Alert, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import ProductCard from '../components/ProductCard';
-import { useProductos } from '../hooks/useArtesania';
+import { useProductos } from '../hooks/useProductos';
 import type { Producto } from '../types';
 
 export default function HomeScreen() {
-  const productos = useProductos();
+  const { productos, cargando, getArtesano } = useProductos();
 
   const handleOferta = (producto: Producto & { artesano: string }) => {
     Alert.alert(
@@ -25,17 +25,26 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Productos de artesanía</Text>
-      <FlatList
-        data={productos}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContent}
-        renderItem={({ item }) => <ProductCard item={item} onPressOferta={() => handleOferta(item)} />}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No hay productos disponibles.</Text>
-          </View>
-        }
-      />
+      {cargando ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Cargando productos...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={productos.map((producto) => ({
+            ...producto,
+            artesano: getArtesano(producto.artesanoId)?.nombre ?? 'Artesano desconocido',
+          }))}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          renderItem={({ item }) => <ProductCard item={item} onPressOferta={() => handleOferta(item)} />}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No hay productos disponibles.</Text>
+            </View>
+          }
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -66,5 +75,15 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: '#666',
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 80,
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#3b82f6',
   },
 });
